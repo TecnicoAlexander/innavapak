@@ -158,6 +158,56 @@
   .logout-btn:hover { border-color:rgba(255,255,255,0.6); color:rgba(255,255,255,0.8); }
   body { padding-bottom:60px; }
 
+
+  /* CALENDAR */
+  .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; flex-wrap:wrap; gap:0.5rem; }
+  .cal-nav-btn { background:var(--blue-mid); color:var(--white); border:2px solid var(--blue-deep); border-radius:4px; padding:0.4rem 1rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.9rem; letter-spacing:1px; cursor:pointer; transition:background 0.12s; }
+  .cal-nav-btn:hover { background:var(--blue-light); }
+  .cal-month-title { font-family:'Bebas Neue',cursive; font-size:1.6rem; letter-spacing:3px; color:var(--blue-deep); }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .cal-day-header { text-align:center; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.8rem; letter-spacing:1px; color:var(--text-muted); padding:6px 0; text-transform:uppercase; }
+  .cal-cell { min-height:80px; border:1px solid #dde8f5; border-radius:4px; padding:4px; background:var(--white); position:relative; cursor:pointer; transition:background 0.12s; }
+  .cal-cell:hover { background:var(--blue-pale); }
+  .cal-cell.other-month { background:#f8f8f8; opacity:0.5; cursor:default; }
+  .cal-cell.today { border:2px solid var(--blue-light); background:var(--blue-pale); }
+  .cal-day-num { font-size:0.8rem; font-weight:700; color:var(--text-mid); margin-bottom:3px; }
+  .cal-event { background:var(--blue-mid); color:var(--white); border-radius:3px; padding:2px 5px; font-size:0.7rem; margin-bottom:2px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.5px; }
+  .cal-event.status-entregado { background:#2e7d32; }
+  .cal-event.status-cancelado { background:#c62828; }
+  .cal-event.status-pendiente { background:var(--blue-mid); }
+
+  /* DELIVERY MODAL */
+  .del-modal-overlay { position:fixed; inset:0; background:rgba(10,37,64,0.8); z-index:2000; display:none; align-items:center; justify-content:center; padding:1rem; }
+  .del-modal-overlay.open { display:flex; }
+  .del-modal-box { background:var(--white); border:2px solid #7a8a9a; border-radius:6px; box-shadow:6px 6px 0 #7a8a9a; width:100%; max-width:480px; animation:modalIn 0.2s ease; }
+  .del-modal-header { background:var(--card-header); border-bottom:2px solid #7a8a9a; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; }
+  .del-modal-title { font-family:'Bebas Neue',cursive; font-size:1.4rem; letter-spacing:3px; color:var(--blue-deep); }
+  .del-modal-body { padding:1.5rem; display:flex; flex-direction:column; gap:1rem; }
+  .del-field label { display:block; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; color:var(--text-mid); margin-bottom:4px; text-transform:uppercase; }
+  .del-field input, .del-field select, .del-field textarea { width:100%; padding:0.6rem 0.9rem; border:2px solid #c8d8ee; border-radius:4px; font-family:'Barlow',sans-serif; font-size:0.9rem; color:var(--text-dark); outline:none; transition:border-color 0.2s; background:var(--white); }
+  .del-field input:focus, .del-field select:focus, .del-field textarea:focus { border-color:var(--blue-light); }
+  .del-field textarea { resize:vertical; min-height:70px; }
+  .del-btn-row { display:flex; gap:0.8rem; justify-content:flex-end; flex-wrap:wrap; }
+  .del-save-btn { background:var(--blue-mid); color:var(--white); border:2px solid var(--blue-deep); border-radius:4px; padding:0.55rem 1.4rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.9rem; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; box-shadow:2px 2px 0 var(--blue-deep); transition:all 0.12s; }
+  .del-save-btn:hover { background:var(--blue-light); }
+  .del-delete-btn { background:#fff0f0; border:2px solid #fcc; color:#c00; border-radius:4px; padding:0.55rem 1rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.9rem; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all 0.12s; }
+  .del-delete-btn:hover { background:#fcc; }
+
+  /* STATUS BADGE */
+  .status-badge { display:inline-block; padding:3px 10px; border-radius:3px; font-size:0.75rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+  .status-badge.pendiente { background:#e3f2fd; color:#1565c0; }
+  .status-badge.entregado { background:#e8f5e9; color:#2e7d32; }
+  .status-badge.cancelado { background:#ffebee; color:#c62828; }
+
+  /* UPCOMING LIST */
+  .upcoming-list { display:flex; flex-direction:column; gap:0.6rem; margin-top:1.5rem; }
+  .upcoming-item { display:flex; align-items:center; gap:1rem; padding:0.7rem 1rem; border:1.5px solid #c8d8ee; border-radius:4px; background:var(--blue-pale); cursor:pointer; transition:background 0.12s; flex-wrap:wrap; }
+  .upcoming-item:hover { background:#d0e4ff; }
+  .upcoming-date { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.95rem; color:var(--blue-deep); min-width:80px; }
+  .upcoming-info { flex:1; }
+  .upcoming-client { font-weight:600; font-size:0.9rem; color:var(--text-dark); }
+  .upcoming-desc { font-size:0.8rem; color:var(--text-muted); }
+
   @media (max-width: 600px) {
     .header-body { padding: 1.2rem; flex-direction: column; text-align: center; }
     .page-body { padding: 1.5rem 1rem 3rem; }
@@ -197,6 +247,7 @@
   <a href="#codigos-cliente">📦 Códigos de Cliente</a>
   <a href="#certificaciones">✅ Certificaciones</a>
   <a href="#remisiones">📄 Remisiones</a>
+  <a href="#calendario">📅 Entregas</a>
 </nav>
 
 <!-- PAGE BODY -->
@@ -270,6 +321,38 @@
     </div>
   </section>
 
+
+  <!-- 5. CALENDARIO DE ENTREGAS -->
+  <section class="section-card" id="calendario">
+    <div class="section-tab">
+      <span class="section-title">📅 Calendario de Entregas</span>
+      <button class="add-btn" onclick="openDeliveryModal()">+ Nueva Entrega</button>
+    </div>
+    <div class="section-body">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">&#8592; Anterior</button>
+        <span class="cal-month-title" id="cal-title">Mes Año</span>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">Siguiente &#8594;</button>
+      </div>
+      <div class="cal-grid" id="cal-grid">
+        <div class="cal-day-header">Dom</div>
+        <div class="cal-day-header">Lun</div>
+        <div class="cal-day-header">Mar</div>
+        <div class="cal-day-header">Mie</div>
+        <div class="cal-day-header">Jue</div>
+        <div class="cal-day-header">Vie</div>
+        <div class="cal-day-header">Sab</div>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1rem; letter-spacing:1px; color:var(--text-mid); margin-bottom:0.5rem;">PROXIMAS ENTREGAS</div>
+        <div class="upcoming-list" id="upcoming-list">
+          <div class="empty-hint" style="margin-top:0;">No hay entregas registradas.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
 </main>
 </div>
 
@@ -288,6 +371,44 @@
     <span class="save-status" id="save-status">Sin cambios guardados</span>
     <button class="save-btn" onclick="saveData()">&#128190; Guardar Informacion</button>
     <button class="logout-btn" onclick="doLogout()">Salir</button>
+  </div>
+</div>
+
+
+<!-- DELIVERY MODAL -->
+<div class="del-modal-overlay" id="delivery-modal">
+  <div class="del-modal-box">
+    <div class="del-modal-header">
+      <div class="del-modal-title" id="del-modal-title">Nueva Entrega</div>
+      <button class="modal-close" onclick="closeDeliveryModal()">&#10005;</button>
+    </div>
+    <div class="del-modal-body">
+      <input type="hidden" id="del-id">
+      <div class="del-field">
+        <label>Cliente</label>
+        <input type="text" id="del-client" placeholder="Nombre del cliente...">
+      </div>
+      <div class="del-field">
+        <label>Descripcion / Producto</label>
+        <textarea id="del-desc" placeholder="Describe la entrega..."></textarea>
+      </div>
+      <div class="del-field">
+        <label>Fecha y Hora</label>
+        <input type="datetime-local" id="del-date">
+      </div>
+      <div class="del-field">
+        <label>Estado</label>
+        <select id="del-status">
+          <option value="pendiente">Pendiente</option>
+          <option value="entregado">Entregado</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+      <div class="del-btn-row">
+        <button class="del-delete-btn" id="del-delete-btn" onclick="deleteDelivery()" style="display:none;">Eliminar</button>
+        <button class="del-save-btn" onclick="saveDelivery()">Guardar</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -316,7 +437,7 @@
 <script>
 
 // LOGIN
-const ACCESS_PASSWORD = 'innavapak2025';
+const ACCESS_PASSWORD = 'innavapak2026';
 
 function doLogin() {
   const pass = document.getElementById('login-password').value;
@@ -337,27 +458,72 @@ function doLogout() {
   location.reload();
 }
 
-// Auto-check session
+// Auto-check session - always show login on fresh load
 window.addEventListener('DOMContentLoaded', function() {
+  // Always show login screen first
+  document.getElementById('login-screen').classList.remove('hidden');
+  // Only skip if already authenticated in this session
   if (sessionStorage.getItem('innavapak_auth') === '1') {
     document.getElementById('login-screen').classList.add('hidden');
     loadData();
   }
+  renderCalendar();
+  renderUpcoming();
 });
 
-// SAVE
-function saveData() {
+// localStorage mode
+
+// SAVE - Supabase
+async function saveData() {
   const statusEl = document.getElementById('save-status');
-  const clientsData = Object.entries(clients).map(([id, c]) => ({ id, name: c.name }));
-  const payload = { clients: clientsData, saved_at: new Date().toISOString() };
+  statusEl.textContent = 'Guardando...';
+  statusEl.className = 'save-status';
+
+  // Build clients with file data (base64)
+  const clientsData = await Promise.all(Object.entries(clients).map(async ([id, c]) => {
+    const filesData = await Promise.all(c.files.map(f => fileToBase64(f)));
+    return { id, name: c.name, files: filesData };
+  }));
+
+  // Cost files
+  const costFilesData = await Promise.all(costFiles.map(f => fileToBase64(f)));
+
+  // Cert files
+  const certFilesData = await Promise.all(certFiles.map(f => fileToBase64Cert(f)));
+
+  // Remision
+  let remisionData = null;
+  if (remisionFile) remisionData = { name: remisionFile.name, size: remisionFile.size, url: remisionFile.url };
+
+  const payload = {
+    clients: clientsData,
+    costFiles: costFilesData,
+    certFiles: certFilesData,
+    remision: remisionData,
+    deliveries: deliveries,
+    saved_at: new Date().toISOString()
+  };
+
   try {
     localStorage.setItem('innavapak_data', JSON.stringify(payload));
     statusEl.textContent = 'Guardado a las ' + new Date().toLocaleTimeString('es-MX');
     statusEl.className = 'save-status ok';
   } catch(e) {
-    statusEl.textContent = 'Error al guardar.';
+    statusEl.textContent = 'Error: datos muy pesados para guardar localmente.';
     statusEl.className = 'save-status err';
   }
+}
+
+// Convert excel file object to storable format
+function fileToBase64(f) {
+  return new Promise(resolve => {
+    if (!f.rows) { resolve({ name: f.name, rows: f.rows || [] }); return; }
+    resolve({ name: f.name, rows: f.rows });
+  });
+}
+
+function fileToBase64Cert(f) {
+  return { name: f.name, size: f.size, url: f.url };
 }
 
 // LOAD
@@ -366,15 +532,195 @@ function loadData() {
   if (!raw) return;
   try {
     const saved = JSON.parse(raw);
+
+    // Load clients
     if (saved.clients) {
-      saved.clients.forEach(c => { clients[c.id] = { name: c.name, files: [] }; });
+      saved.clients.forEach(c => {
+        clients[c.id] = { name: c.name, files: (c.files || []).map(f => ({ name: f.name, rows: f.rows || [] })) };
+      });
       renderClientsGrid();
-      const statusEl = document.getElementById('save-status');
-      statusEl.textContent = 'Datos cargados correctamente';
-      statusEl.className = 'save-status ok';
-      setTimeout(() => { statusEl.textContent = 'Sin cambios nuevos'; statusEl.className = 'save-status'; }, 3000);
     }
-  } catch(e) {}
+
+    // Load cost files
+    if (saved.costFiles) {
+      saved.costFiles.forEach(f => { costFiles.push({ name: f.name, rows: f.rows || [] }); });
+      renderCostFiles();
+    }
+
+    // Load cert files
+    if (saved.certFiles) {
+      saved.certFiles.forEach(f => { certFiles.push({ name: f.name, size: f.size, url: f.url }); });
+      renderCertFiles();
+    }
+
+    // Load remision
+    if (saved.remision) {
+      remisionFile = saved.remision;
+      renderRemision();
+    }
+
+    // Load deliveries
+    if (saved.deliveries) {
+      deliveries = saved.deliveries;
+      renderCalendar();
+      renderUpcoming();
+    }
+
+    const statusEl = document.getElementById('save-status');
+    statusEl.textContent = 'Datos cargados correctamente';
+    statusEl.className = 'save-status ok';
+    setTimeout(() => { statusEl.textContent = 'Sin cambios nuevos'; statusEl.className = 'save-status'; }, 3000);
+  } catch(e) { console.error(e); }
+}
+
+// CALENDAR
+let deliveries = {};
+let currentYear = new Date().getFullYear();
+let currentMonth = new Date().getMonth();
+let editingDeliveryId = null;
+
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  document.getElementById('cal-title').textContent = MONTHS[currentMonth] + ' ' + currentYear;
+  const grid = document.getElementById('cal-grid');
+  // Keep headers (first 7 children)
+  while (grid.children.length > 7) grid.removeChild(grid.lastChild);
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInPrev = new Date(currentYear, currentMonth, 0).getDate();
+  const today = new Date();
+
+  // Prev month padding
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell other-month';
+    cell.innerHTML = '<div class="cal-day-num">' + (daysInPrev - i) + '</div>';
+    grid.appendChild(cell);
+  }
+
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cell = document.createElement('div');
+    const isToday = (d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear());
+    cell.className = 'cal-cell' + (isToday ? ' today' : '');
+    cell.innerHTML = '<div class="cal-day-num">' + d + '</div>';
+
+    // Add events for this day
+    const dateStr = currentYear + '-' + String(currentMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    Object.values(deliveries).forEach(del => {
+      if (del.date && del.date.startsWith(dateStr)) {
+        const ev = document.createElement('div');
+        ev.className = 'cal-event status-' + (del.status || 'pendiente');
+        ev.textContent = del.client || 'Entrega';
+        ev.onclick = (e) => { e.stopPropagation(); openDeliveryModal(del.id); };
+        cell.appendChild(ev);
+      }
+    });
+
+    cell.onclick = () => openDeliveryModalForDate(dateStr);
+    grid.appendChild(cell);
+  }
+
+  // Next month padding
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remaining; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell other-month';
+    cell.innerHTML = '<div class="cal-day-num">' + i + '</div>';
+    grid.appendChild(cell);
+  }
+}
+
+function renderUpcoming() {
+  const list = document.getElementById('upcoming-list');
+  const now = new Date();
+  const upcoming = Object.values(deliveries)
+    .filter(d => d.date && new Date(d.date) >= now)
+    .sort((a,b) => new Date(a.date) - new Date(b.date))
+    .slice(0, 8);
+
+  if (!upcoming.length) {
+    list.innerHTML = '<div class="empty-hint" style="margin-top:0;">No hay entregas proximas.</div>';
+    return;
+  }
+  list.innerHTML = upcoming.map(d => {
+    const dt = new Date(d.date);
+    const dateStr = dt.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' });
+    const timeStr = dt.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
+    return `<div class="upcoming-item" onclick="openDeliveryModal('${d.id}')">
+      <div class="upcoming-date">${dateStr}<br><span style="font-size:0.75rem;color:var(--text-muted)">${timeStr}</span></div>
+      <div class="upcoming-info">
+        <div class="upcoming-client">${d.client || 'Sin cliente'}</div>
+        <div class="upcoming-desc">${d.desc || ''}</div>
+      </div>
+      <span class="status-badge ${d.status || 'pendiente'}">${d.status || 'pendiente'}</span>
+    </div>`;
+  }).join('');
+}
+
+function openDeliveryModal(id) {
+  editingDeliveryId = id || null;
+  const del = id ? deliveries[id] : null;
+  document.getElementById('del-modal-title').textContent = del ? 'Editar Entrega' : 'Nueva Entrega';
+  document.getElementById('del-id').value = id || '';
+  document.getElementById('del-client').value = del ? del.client : '';
+  document.getElementById('del-desc').value = del ? del.desc : '';
+  document.getElementById('del-date').value = del ? del.date : '';
+  document.getElementById('del-status').value = del ? del.status : 'pendiente';
+  document.getElementById('del-delete-btn').style.display = del ? 'inline-block' : 'none';
+  document.getElementById('delivery-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function openDeliveryModalForDate(dateStr) {
+  openDeliveryModal(null);
+  document.getElementById('del-date').value = dateStr + 'T09:00';
+}
+
+function closeDeliveryModal() {
+  document.getElementById('delivery-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  editingDeliveryId = null;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('delivery-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeliveryModal();
+  });
+});
+
+function saveDelivery() {
+  const id = editingDeliveryId || ('del_' + Date.now());
+  deliveries[id] = {
+    id,
+    client: document.getElementById('del-client').value.trim(),
+    desc: document.getElementById('del-desc').value.trim(),
+    date: document.getElementById('del-date').value,
+    status: document.getElementById('del-status').value
+  };
+  closeDeliveryModal();
+  renderCalendar();
+  renderUpcoming();
+}
+
+function deleteDelivery() {
+  if (!editingDeliveryId) return;
+  if (confirm('¿Eliminar esta entrega?')) {
+    delete deliveries[editingDeliveryId];
+    closeDeliveryModal();
+    renderCalendar();
+    renderUpcoming();
+  }
 }
 
 
