@@ -315,6 +315,69 @@
 
 <script>
 
+// LOGIN
+const ACCESS_PASSWORD = 'Innavapak2025';
+
+function doLogin() {
+  const pass = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  if (pass === ACCESS_PASSWORD) {
+    sessionStorage.setItem('innavapak_auth', '1');
+    document.getElementById('login-screen').classList.add('hidden');
+    loadData();
+  } else {
+    errEl.textContent = 'Contrasena incorrecta, intenta de nuevo.';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-password').focus();
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('innavapak_auth');
+  location.reload();
+}
+
+// Auto-check session
+window.addEventListener('DOMContentLoaded', function() {
+  if (sessionStorage.getItem('innavapak_auth') === '1') {
+    document.getElementById('login-screen').classList.add('hidden');
+    loadData();
+  }
+});
+
+// SAVE
+function saveData() {
+  const statusEl = document.getElementById('save-status');
+  const clientsData = Object.entries(clients).map(([id, c]) => ({ id, name: c.name }));
+  const payload = { clients: clientsData, saved_at: new Date().toISOString() };
+  try {
+    localStorage.setItem('innavapak_data', JSON.stringify(payload));
+    statusEl.textContent = 'Guardado a las ' + new Date().toLocaleTimeString('es-MX');
+    statusEl.className = 'save-status ok';
+  } catch(e) {
+    statusEl.textContent = 'Error al guardar.';
+    statusEl.className = 'save-status err';
+  }
+}
+
+// LOAD
+function loadData() {
+  const raw = localStorage.getItem('innavapak_data');
+  if (!raw) return;
+  try {
+    const saved = JSON.parse(raw);
+    if (saved.clients) {
+      saved.clients.forEach(c => { clients[c.id] = { name: c.name, files: [] }; });
+      renderClientsGrid();
+      const statusEl = document.getElementById('save-status');
+      statusEl.textContent = 'Datos cargados correctamente';
+      statusEl.className = 'save-status ok';
+      setTimeout(() => { statusEl.textContent = 'Sin cambios nuevos'; statusEl.className = 'save-status'; }, 3000);
+    }
+  } catch(e) {}
+}
+
+
 // LOGO
 function uploadLogo(e) {
   const f = e.target.files[0]; if (!f) return;
