@@ -6,6 +6,7 @@
 <title>INNAVAPAK</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --blue-deep: #0d2f55;
@@ -471,106 +472,146 @@ window.addEventListener('DOMContentLoaded', function() {
   renderUpcoming();
 });
 
-// localStorage mode
+// SUPABASE INIT
+const { createClient } = supabase;
+const sb = createClient('https://aukirjjgqtrltltvpnpf.supabase.co', 'sb_publishable_ojyK26oMQICdgFy-FiC6-g_ppuwbrqq');
 
-// SAVE - Supabase
+// SAVE - Supabase con Storage para archivos
 async function saveData() {
   const statusEl = document.getElementById('save-status');
   statusEl.textContent = 'Guardando...';
   statusEl.className = 'save-status';
 
-  // Build clients with file data (base64)
-  const clientsData = await Promise.all(Object.entries(clients).map(async ([id, c]) => {
-    const filesData = await Promise.all(c.files.map(f => fileToBase64(f)));
-    return { id, name: c.name, files: filesData };
-  }));
-
-  // Cost files
-  const costFilesData = await Promise.all(costFiles.map(f => fileToBase64(f)));
-
-  // Cert files
-  const certFilesData = await Promise.all(certFiles.map(f => fileToBase64Cert(f)));
-
-  // Remision
-  let remisionData = null;
-  if (remisionFile) remisionData = { name: remisionFile.name, size: remisionFile.size, url: remisionFile.url };
-
-  const payload = {
-    clients: clientsData,
-    costFiles: costFilesData,
-    certFiles: certFilesData,
-    remision: remisionData,
-    deliveries: deliveries,
-    saved_at: new Date().toISOString()
-  };
-
   try {
-    localStorage.setItem('innavapak_data', JSON.stringify(payload));
+    // 1. Subir archivos de costos al Storage
+    const costMeta = [];
+    for (const f of costFiles) {
+      if (f._file) {
+        const path = 'costos/' + f.name;
+        await sb.storage.from('innavapak-files').upload(path, f._file, { upsert: true });
+      }
+      costMeta.push({ name: f.name, rows: f.rows || [] });
+    }
+
+    // 2. Subir certificados al Storage
+    const certMeta = [];
+    for (const f of certFiles) {
+      if (f._file) {
+        const path = 'certificados/' + f.name;
+        await sb.storage.from('innavapak-files').upload(path, f._file, { upsert: true });
+      }
+      certMeta.push({ name: f.name, size: f.size || 0 });
+    }
+
+    // 3. Subir remision al Storage
+    let remisionMeta = null;
+    if (remisionFile) {
+      if (remisionFile._file) {
+        const path = 'remisiones/' + remisionFile.name;
+        await sb.storage.from('innavapak-files').upload(path, remisionFile._file, { upsert: true });
+      }
+      remisionMeta = { name: remisionFile.name, size: remisionFile.size || 0 };
+    }
+
+    // 4. Guardar clientes y datos en tabla
+    const clientsData = Object.entries(clients).map(([id, c]) => ({
+      id, name: c.name,
+      files: c.files.map(f => ({ name: f.name, rows: f.rows || [] }))
+    }));
+
+    const payload = {
+      clients: clientsData,
+      costFiles: costMeta,
+      certFiles: certMeta,
+      remision: remisionMeta,
+      deliveries: deliveries,
+      saved_at: new Date().toISOString()
+    };
+
+    const { error } = await sb.from('innavapak_data').upsert(
+      { clave: 'main', datos: payload },
+      { onConflict: 'clave' }
+    );
+
+    if (error) throw error;
+
     statusEl.textContent = 'Guardado a las ' + new Date().toLocaleTimeString('es-MX');
     statusEl.className = 'save-status ok';
+
   } catch(e) {
-    statusEl.textContent = 'Error: datos muy pesados para guardar localmente.';
+    statusEl.textContent = 'Error: ' + e.message;
     statusEl.className = 'save-status err';
   }
 }
 
-// Convert excel file object to storable format
-function fileToBase64(f) {
-  return new Promise(resolve => {
-    if (!f.rows) { resolve({ name: f.name, rows: f.rows || [] }); return; }
-    resolve({ name: f.name, rows: f.rows });
-  });
+// Obtener URL publica de archivo en Storage
+function storageUrl(path) {
+  return 'https://aukirjjgqtrltltvpnpf.supabase.co/storage/v1/object/public/innavapak-files/' + path;
 }
 
-function fileToBase64Cert(f) {
-  return { name: f.name, size: f.size, url: f.url };
-}
+// LOAD - Supabase con Storage
+async function loadData() {
+  const statusEl = document.getElementById('save-status');
+  statusEl.textContent = 'Cargando datos...';
+  statusEl.className = 'save-status';
 
-// LOAD
-function loadData() {
-  const raw = localStorage.getItem('innavapak_data');
-  if (!raw) return;
   try {
-    const saved = JSON.parse(raw);
+    const { data, error } = await sb.from('innavapak_data')
+      .select('datos').eq('clave', 'main').single();
 
-    // Load clients
+    if (error || !data) {
+      statusEl.textContent = 'Sin datos guardados aun.';
+      statusEl.className = 'save-status';
+      return;
+    }
+
+    const saved = data.datos;
+
+    // Cargar clientes
     if (saved.clients) {
       saved.clients.forEach(c => {
-        clients[c.id] = { name: c.name, files: (c.files || []).map(f => ({ name: f.name, rows: f.rows || [] })) };
+        clients[c.id] = { name: c.name, files: (c.files||[]).map(f => ({ name: f.name, rows: f.rows||[] })) };
       });
       renderClientsGrid();
     }
 
-    // Load cost files
+    // Cargar costos con URL del Storage
     if (saved.costFiles) {
-      saved.costFiles.forEach(f => { costFiles.push({ name: f.name, rows: f.rows || [] }); });
+      saved.costFiles.forEach(f => {
+        costFiles.push({ name: f.name, rows: f.rows||[], url: storageUrl('costos/' + f.name) });
+      });
       renderCostFiles();
     }
 
-    // Load cert files
+    // Cargar certificados con URL del Storage
     if (saved.certFiles) {
-      saved.certFiles.forEach(f => { certFiles.push({ name: f.name, size: f.size, url: f.url }); });
+      saved.certFiles.forEach(f => {
+        certFiles.push({ name: f.name, size: f.size||0, url: storageUrl('certificados/' + f.name) });
+      });
       renderCertFiles();
     }
 
-    // Load remision
+    // Cargar remision con URL del Storage
     if (saved.remision) {
-      remisionFile = saved.remision;
+      remisionFile = { name: saved.remision.name, size: saved.remision.size||0, url: storageUrl('remisiones/' + saved.remision.name) };
       renderRemision();
     }
 
-    // Load deliveries
+    // Cargar entregas
     if (saved.deliveries) {
       deliveries = saved.deliveries;
       renderCalendar();
       renderUpcoming();
     }
 
-    const statusEl = document.getElementById('save-status');
     statusEl.textContent = 'Datos cargados correctamente';
     statusEl.className = 'save-status ok';
     setTimeout(() => { statusEl.textContent = 'Sin cambios nuevos'; statusEl.className = 'save-status'; }, 3000);
-  } catch(e) { console.error(e); }
+
+  } catch(e) {
+    statusEl.textContent = 'Error al cargar: ' + e.message;
+    statusEl.className = 'save-status err';
+  }
 }
 
 // CALENDAR
@@ -759,7 +800,7 @@ function renderTable(rows) {
 // TABLA DE COSTOS
 let costFiles = [];
 function loadCostFiles(e) {
-  Array.from(e.target.files).forEach(f => parseExcel(f, rows => { costFiles.push({name:f.name,rows}); renderCostFiles(); }));
+  Array.from(e.target.files).forEach(f => parseExcel(f, rows => { costFiles.push({name:f.name, rows, _file:f}); renderCostFiles(); }));
   e.target.value = '';
 }
 function removeCostFile(i) { costFiles.splice(i,1); renderCostFiles(); }
@@ -826,7 +867,7 @@ document.getElementById('new-client-name').addEventListener('keydown', e => { if
 // CERTIFICACIONES
 let certFiles = [];
 function loadCertFiles(e) {
-  Array.from(e.target.files).forEach(f => { certFiles.push({name:f.name, size:f.size, url:URL.createObjectURL(f)}); renderCertFiles(); });
+  Array.from(e.target.files).forEach(f => { certFiles.push({name:f.name, size:f.size, url:URL.createObjectURL(f), _file:f}); renderCertFiles(); });
   e.target.value = '';
 }
 function removeCertFile(i) { URL.revokeObjectURL(certFiles[i].url); certFiles.splice(i,1); renderCertFiles(); }
@@ -852,8 +893,8 @@ function renderCertFiles() {
 let remisionFile = null;
 function loadRemision(e) {
   const f = e.target.files[0]; if (!f) return;
-  if (remisionFile) URL.revokeObjectURL(remisionFile.url);
-  remisionFile = {name:f.name, size:f.size, url:URL.createObjectURL(f)};
+  if (remisionFile && remisionFile.url && remisionFile.url.startsWith('blob:')) URL.revokeObjectURL(remisionFile.url);
+  remisionFile = {name:f.name, size:f.size, url:URL.createObjectURL(f), _file:f};
   renderRemision(); e.target.value = '';
 }
 function removeRemision() {
