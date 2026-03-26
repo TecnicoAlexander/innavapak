@@ -212,17 +212,25 @@ footer{background:var(--blue-deep);border-top:1px solid rgba(255,255,255,0.06);p
 </style>
 </head>
 <body>
-
+<input>
+</div>
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">INNAVAPAK</div>
     <div class="login-sub">Acceso Administrativo</div>
-    <div class="login-field"><input type="password" id="login-password" placeholder="Contraseña de acceso" onkeydown="if(event.key==='Enter')doLogin()"></div>
+
+    <div class="login-field">
+      <input type="email" id="login-user" placeholder="Correo electrónico" onkeydown="if(event.key==='Enter') document.getElementById('login-password').focus()">
+    </div>
+
+    <div class="login-field">
+      <input type="password" id="login-password" placeholder="Contraseña de acceso" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+  
     <button class="login-btn" onclick="doLogin()">Entrar</button>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
-
 <div id="header-wrapper">
 <header>
   <div class="header-body">
@@ -453,10 +461,21 @@ footer{background:var(--blue-deep);border-top:1px solid rgba(255,255,255,0.06);p
 </div>
 
 <script>
+// ╔══════════════════════════════════════════════════════════════╗
+//   USUARIOS AUTORIZADOS — AGREGA O QUITA CORREOS AQUÍ
+//   Formato: { correo: "correo@ejemplo.com", password: "clave" }
+// ╚══════════════════════════════════════════════════════════════╝
+const USUARIOS = [
+  { correo: "jaime@innavapak.com",  password: "admin2026"   },
+  // { correo: "reyna@innavapak.com", password: "admin2026" },
+  // { correo: "usuario3@correo.com", password: "clave3" },
+];
+// ══════════════════════════════════════════════════════════════
+
 
 const { createClient } = supabase;
 const sb = createClient('https://aukirjjgqtrltltvpnpf.supabase.co', 'sb_publishable_ojyK26oMQICdgFy-FiC6-g_ppuwbrqq');
-const ACCESS_PASSWORD = 'innavapak2026';
+// Contrasenas manejadas en bloque USUARIOS arriba
 let currentUser = '';
 let clients = {}, activeClientId = null;
 let costFiles = [], certFiles = [], remisionFile = null;
@@ -466,16 +485,22 @@ let ordenes = {}, editingOrdenId = null, ordenCounter = 1;
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 function doLogin() {
-  const user = document.getElementById('login-user').value.trim();
-  const pass = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-error');
-  if (!user) { errEl.textContent = 'Escribe tu nombre o correo.'; return; }
-  if (pass !== ACCESS_PASSWORD) { errEl.textContent = 'Contrasena incorrecta.'; document.getElementById('login-password').value=''; return; }
-  currentUser = user;
-  sessionStorage.setItem('innavapak_auth','1');
-  sessionStorage.setItem('innavapak_user', user);
+  const correo = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass   = document.getElementById('login-password').value;
+  const errEl  = document.getElementById('login-error');
+  if (!correo) { errEl.textContent = 'Escribe tu correo.'; return; }
+  const usuario = USUARIOS.find(u => u.correo.toLowerCase() === correo && u.password === pass);
+  if (!usuario) {
+    errEl.textContent = 'Correo o contrasena incorrectos.';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-user').focus();
+    return;
+  }
+  currentUser = usuario.correo;
+  sessionStorage.setItem('innavapak_auth', '1');
+  sessionStorage.setItem('innavapak_user', usuario.correo);
   showApp();
-  logHistory(user, 'Ingreso al sistema');
+  logHistory(usuario.correo, 'Ingreso al sistema');
   loadData();
 }
 function doLogout() {
